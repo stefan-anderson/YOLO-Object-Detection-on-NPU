@@ -1,4 +1,6 @@
-Additional requirements: AMD Ryzen AI environment
+Additional requirements: AMD Ryzen AI Python environment
+
+Model: https://huggingface.co/amd/yolov8m/blob/main/yolov8m.onnx
 
 Program: video_youtube.py --url "YouTube url"
 
