@@ -93,7 +93,7 @@ while True:
     # Post-processing (NHWC → NCHW only here)
     outputs = [torch.from_numpy(o).permute(0, 3, 1, 2) for o in outputs]
     preds = post_process(outputs)
-    preds = non_max_suppression(preds, 0.25, 0.7, max_det=300)
+    preds = non_max_suppression(preds)
 
     # Undo letterbox
     for det in preds:
