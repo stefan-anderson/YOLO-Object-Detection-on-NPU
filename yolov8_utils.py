@@ -683,7 +683,9 @@ def plot_images(
                     label = f"{c}" if labels else f"{c} {conf[j]:.1f}"
                     annotator.box_label(box, label, color=color)
     frame = cv2.cvtColor(np.array(annotator.im), cv2.COLOR_RGB2BGR)
+    cv2.namedWindow("YOLOv8 Output", cv2.WINDOW_NORMAL)
     cv2.imshow("YOLOv8 Output", frame)
+
     return cv2.waitKey(1)  # refresh window
 
 
