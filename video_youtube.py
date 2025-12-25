@@ -6,29 +6,12 @@ import numpy as np
 import onnxruntime as ort
 from vidgear.gears import CamGear
 
+from image_util import *
+
 from yolov8_utils import (
     post_process,
     non_max_suppression,
-    output_to_target,
-    plot_images,
 )
-
-def letterbox(img, new_size=640, color=(114, 114, 114)):
-    h, w = img.shape[:2]
-    scale = min(new_size / w, new_size / h)
-
-    new_w = int(w * scale)
-    new_h = int(h * scale)
-
-    resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LINEAR)
-
-    canvas = np.full((new_size, new_size, 3), color, dtype=np.uint8)
-    dw = (new_size - new_w) // 2
-    dh = (new_size - new_h) // 2
-
-    canvas[dh:dh + new_h, dw:dw + new_w] = resized
-    return canvas, scale, dw, dh
-
 
 # -------------------------------------------------
 # NPU / ONNX Runtime setup
@@ -93,7 +76,7 @@ while True:
     if frame is None:
        break
 
-    # BGR → RGB + resize
+    # BGR → RGB + letterbox
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame_rgb, scale, dw, dh = letterbox(frame_rgb, 640)
 
@@ -112,17 +95,17 @@ while True:
     preds = post_process(outputs)
     preds = non_max_suppression(preds, 0.25, 0.7, max_det=300)
 
+    # Undo letterbox
     for det in preds:
         if det is not None and len(det):
             det[:, [0, 2]] -= dw   # remove x padding
             det[:, [1, 3]] -= dh   # remove y padding
             det[:, :4] /= scale   # undo resize
 
-    targets = output_to_target(preds, max_det=300)
-
-    # Visualization (plot_images expects NCHW)
-    im_plot = frame.transpose(2, 0, 1)[None, ...]  # BGR → NCHW
-    key = plot_images(im_plot, *targets, names=names)
+    # Draw image
+    for det in preds:
+        if det is not None and len(det):
+            key = plot_image(frame, det, names)
 
     # Exit on 'Esc'
     if key == 27:
