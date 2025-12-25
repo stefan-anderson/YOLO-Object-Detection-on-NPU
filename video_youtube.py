@@ -18,12 +18,18 @@ from yolov8_utils import (
 # -------------------------------------------------
 print(ort.get_available_providers())
 
+pwd = Path(__file__).resolve().parent
 model = "yolov8m.onnx"
 providers = ["VitisAIExecutionProvider"]
-xclbin_file = Path(__file__).resolve().parent / "4x4.xclbin"
+config = pwd / "vaip_config"
+xclbin_file = pwd / "4x4.xclbin"
 provider_options = [{
+    "config_file": config,
     "target": "X1",
-    "xclbin": xclbin_file
+    "xclbin": xclbin_file,
+    'cache_dir': str(pwd),
+    'cache_key': 'compiled_yolov8m',
+    'enable_cache_file_io_in_mem': 0
 }]
 
 print("Creating ONNX Runtime session...")
@@ -94,11 +100,10 @@ while True:
     im_plot = np.transpose(im_npu, (0, 3, 1, 2))
     key = plot_images(im_plot, *targets, names=names)
 
-    # Exit on 'q'
-    if key & 0xFF == ord("q"):
+    # Exit on 'Esc'
+    if key == 27:
         break
 
-    frame = stream.read()
     frame = stream.read()
 # -------------------------------------------------
 # Cleanup

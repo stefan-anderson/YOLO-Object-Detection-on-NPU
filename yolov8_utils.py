@@ -686,8 +686,7 @@ def plot_images(
     annotator.im.save(fname) # save
     frame = cv2.cvtColor(np.array(annotator.im), cv2.COLOR_RGB2BGR)
     cv2.imshow("YOLOv8 Output", frame)
-    plot_images = cv2.waitKey(1)  # refresh window
-    return plot_images
+    return cv2.waitKey(1)  # refresh window
 
 
 def output_to_target(output, max_det=300):
