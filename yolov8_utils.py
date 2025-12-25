@@ -597,6 +597,7 @@ def plot_images(
     bboxes,
     masks=np.zeros(0, dtype=np.uint8),
     paths=None,
+    fname="image.jpg",
     names=None,
 ):
     # Plot image grid with labels
@@ -672,21 +673,14 @@ def plot_images(
             for j, box in enumerate(boxes.T.tolist()):
                 c = classes[j]
                 color = colors(c)
-                if isinstance(names, list):
-                    names2 = names
-                elif isinstance(names, str):
-                    names2 = names.split('\n')
-                else:
-                    names2 = []
+                names2=names.split('\n')
                 c = names2[c] if names2 else c
                 if labels or conf[j] > 0.25:  # 0.25 conf thresh
                     label = f"{c}" if labels else f"{c} {conf[j]:.1f}"
                     annotator.box_label(box, label, color=color)
-    frame = cv2.cvtColor(np.array(annotator.im), cv2.COLOR_RGB2BGR)
-    cv2.namedWindow("YOLOv8 Output", cv2.WINDOW_NORMAL)
-    cv2.imshow("YOLOv8 Output", frame)
-
-    return cv2.waitKey(1)  # refresh window
+    annotator.im.save(fname) # save
+    display(annotator.im)
+    time.sleep(0.02)
 
 
 def output_to_target(output, max_det=300):
