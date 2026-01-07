@@ -21,7 +21,7 @@ print(ort.get_available_providers())
 pwd = Path(__file__).resolve().parent
 model = "yolov8m.onnx"
 providers = ["VitisAIExecutionProvider"]
-config = pwd / "vaip_config"
+config = pwd / "vaip_config.json"
 xclbin_file = pwd / "4x4.xclbin"
 provider_options = [{
     "config_file": config,
